@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Library Management System</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            /* General Styling */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #1f2937;
+            }
+            .navbar {
+                background-color: #1f2937;
+            }
+            .navbar-brand img {
+                margin-right: 10px;
+                height: 45px;
+            }
+            .nav-link {
+                color: white !important;
+                transition: color 0.3s ease;
+            }
+            /* .nav-link:hover {
+                color: #4e73df !important;
+            } */
+            .navbar .nav-link {
+        font-size: 1.1rem;
+        transition: all 0.3s ease-in-out; /* Smooth animation for hover */
+    }
+
+    /* Hover effect */
+    .navbar .nav-link:hover {
+        color: #4e73df !important;; /* Change text color */
+        transform: scale(1.1); /* Slightly enlarge the tab */
+         /* Add underline */
+    }
+            .section-header {
+                background-color: #6c757d;
+                color: white;
+                text-align: center;
+                padding: 10px 0;
+                margin-bottom: 15px;
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+            .form-section, .table-section {
+                background-color: white;
+                border-radius: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+                margin: 15px 0;
+            }
+            .table-container {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .btn-primary {
+                background-color: #007bff;
+                border: none;
+            }
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+            .form-control {
+                margin-bottom: 10px;
+            }
+            .nav-link:hover {
+                color: #4e73df !important;
+            }
+            .no-hover:hover {
+            background-color: transparent;
+            color: inherit;
+            pointer-events: none; /* Optional */
+        }
+        .navbar .nav-link.active {
+    color:  #4e73df !important; /* Custom color for the selected tab */
+    font-weight: bold; /* Make the selected tab bold */
+    text-decoration: underline; /* Underline the active tab */
+    transition: all 0.3s ease-in-out;
+}
+footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        </style>
+    </head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand " href="#">
+                <img src="static/nmu_mini.png" alt="NMU">
+                NMU LIBRARY
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/readers">Readers</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/books">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/borrow">Borrow</a></li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link no-hover" href="#">Employee ID: {{ current_user.EmployeeID }}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="section-header">
+        Library Reader Management
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="row">
+            <!-- Reader Registration Form -->
+            <div class="col-md-4">
+                <div class="form-section">
+                    <h5 class="text-center mb-3">Register New Reader</h5>
+                    <form action="/readers/add" method="POST">
+                        <input type="text" class="form-control" name="reader_name" placeholder="Name" required>
+                        <input type="number" class="form-control" name="reader_contact" placeholder="Contact Number" required>
+                        <input type="number" class="form-control" name="reader_id" placeholder="Reader ID" required>
+                        <input type="text" class="form-control" name="reader_address" placeholder="Address" required>
+                        <button type="submit" class="btn btn-primary w-100">Save</button>
+                    </form>
+                    <ul class="mt-3" style="font-size: 0.9rem;">
+                        <li>Readers should not register multiple times.</li>
+                        <li>Duplicate registrations will be deactivated.</li>
+                        <li>Contact information will be verified.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Search and Reader List -->
+            <div class="col-md-8">
+                <div class="table-section">
+                    <!-- Search Bar -->
+                    <div class="row mb-3">
+                        <div class="col-md-8 offset-md-2">
+                            <form class="d-flex" action="/readers" method="GET">
+                                <input class="form-control me-2" type="search" name="search" placeholder="Search by Reader ID" required>
+                                <button class="btn btn-primary" type="submit">Search</button>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Readers Table -->
+                    <div class="table-container">
+                        <table class="table table-hover text-center">
+                            <thead>
+                                <tr>
+                                    <th>Reader ID</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Expiry Date</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reader in readers %}
+                                <tr>
+                                    <td>{{ reader[1] }}</td>
+                                    <td>{{ reader[0] }}</td>
+                                    <td>{{ reader[3] }}</td>
+                                    <td>{{ reader[2] }}</td>
+                                    <td>{{ reader[4] }}</td>
+                                    <td>
+                                        <form action="/action" method="post">
+                                            <input type="hidden" name="reader_id" value="{{ reader[1] }}">
+                                            <select name="action" class="form-select form-select-sm mb-2">
+                                                <option value="1">Renew 1 Month</option>
+                                                <option value="12">Renew 12 Months</option>
+                                                <option value="delete">Delete Membership</option>
+                                                <option value="deletereader">Delete Reader</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm">Submit</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="text-center mt-2">{{ readers|length }} readers subscribed.</p>
+                </div>
+            </div>
+            <hr style="border: 1px solid rgba(255, 255, 255, 0.2); margin: 2rem 0;">
+        </div>
+        
+    </div>
+    
+    <footer>
+        <p>&copy; 2024 NMU Library Management System | All Rights Reserved</p>
+    </footer>
+
+    <!-- Bootstrap Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+        document.addEventListener("DOMContentLoaded", function() {
+        // Get all navigation links
+        let navLinks = document.querySelectorAll(".nav-link");
+        let currentUrl = window.location.href;
+
+        navLinks.forEach(link => {
+            if (link.href === currentUrl) {
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove("active"));
+                // Add active class to the matching link
+                link.classList.add("active");
+            }
+        });
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <!-- Add your CSS styling here -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+  <style>
+    /* Add your custom styles here */
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Login</h1>
+      <!-- Display flashed error messages -->
+      {% with messages = get_flashed_messages('error') %}
+        {% if messages %}
+          <div class="notification is-danger">
+            {% for message in messages %}
+              <p>{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      <!-- Login form -->
+      <form method="POST" action="/login">
+        <div class="field">
+          <label class="label">Employee ID</label>
+          <div class="control">
+            <input class="input" type="text" name="employee_id" placeholder="Enter your employee ID" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="control">
+            <input class="input" type="password" name="password" placeholder="Enter your password" required>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <label class="checkbox">
+              <input type="checkbox" name="remember">
+              Remember me
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <button class="button is-primary" type="submit">Login</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+</body>
+</html>

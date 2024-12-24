@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        /* Background Animation */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            animation: gradientBG 15s infinite alternate;
+            background: linear-gradient(135deg, #0d1117, #21262d, #1f2937, #424957);
+            background-size: 400% 400%;
+            color: white;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        /* Navbar */
+        .navbar {
+                background-color: #1f2937;
+            }
+            .navbar-brand img {
+                margin-right: 10px;
+                height: 45px;
+            }
+            .nav-link {
+                color: white !important;
+                transition: color 0.3s ease;
+            }
+            /* .nav-link:hover {
+                color: #4e73df !important;
+            } */
+            .navbar .nav-link {
+        font-size: 1.1rem;
+        transition: all 0.3s ease-in-out; /* Smooth animation for hover */
+    }
+
+    /* Hover effect */
+    .navbar .nav-link:hover {
+        color: #4e73df !important;; /* Change text color */
+        transform: scale(1.1); /* Slightly enlarge the tab */
+         /* Add underline */
+    }
+
+        /* Form Card */
+        .form-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+        }
+
+        .table th, .table td {
+            color: white;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background-color: #4e73df;
+            border: none;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #375aa7;
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border: none;
+        }
+
+        .btn-success:hover {
+            background-color: #1e7e34;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        .nav-link:hover {
+                color: #4e73df !important;
+            }
+
+            .navbar .nav-link.active {
+    color:  #4e73df !important; /* Custom color for the selected tab */
+    font-weight: bold; /* Make the selected tab bold */
+    text-decoration: underline; /* Underline the active tab */
+    transition: all 0.3s ease-in-out;
+}
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+            <img src="static/nmu_mini.png" alt="NMU"> NMU LIBRARY
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto">
+                <li class="nav-item"><a class="nav-link" href="/">HOME</a></li>
+                <li class="nav-item"><a class="nav-link" href="/readers">READERS</a></li>
+                <li class="nav-item"><a class="nav-link" href="/books">BOOKS</a></li>
+                <li class="nav-item"><a class="nav-link active" href="/borrow">BORROW</a></li>
+            </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link">Employee ID: {{ current_user.EmployeeID }}</a></li>
+                <li class="nav-item"><a class="nav-link" href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Container -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <!-- Form Card -->
+            <div class="form-card">
+                <h4 class="mb-4 text-center">Borrow a Book</h4>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="book_id" class="form-label">Book ID</label>
+                        <input type="number" class="form-control" id="book_id" name="book_id">
+                    </div>
+                    <div class="mb-3">
+                        <label for="member_id" class="form-label">Member ID</label>
+                        <input type="number" class="form-control" id="member_id" name="member_id">
+                    </div>
+                    <div class="mb-3">
+                        <label for="ref_number" class="form-label">Reference Number</label>
+                        <input type="number" class="form-control" id="ref_number" name="ref_number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="borrowed_date" class="form-label">Borrowed Date</label>
+                        <input type="date" class="form-control" id="borrowed_date" name="borrowed_date">
+                    </div>
+                    <div class="mb-3">
+                        <label for="due_date" class="form-label">Due Date</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Borrow Book</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="table-container">
+                <h5 class="mb-3 text-center">Borrowed Books</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ref Number</th>
+                                <th>Book ID</th>
+                                <th>Reader ID</th>
+                                <th>Employee ID</th>
+                                <th>Borrowed Date</th>
+                                <th>Due Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for Borrow in Borrows %}
+                            <tr>
+                                <td>{{ Borrow.RefNumber }}</td>
+                                <td>{{ Borrow.BookID }}</td>
+                                <td>{{ Borrow.MemberID }}</td>
+                                <td>{{ Borrow.EmployeeID }}</td>
+                                <td>{{ Borrow.BorrowedDate }}</td>
+                                <td>{{ Borrow.DueDate }}</td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">Edit</button>
+                                    <button class="btn btn-sm btn-success">Return</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <p>&copy; 2024 NMU Library Management System | All Rights Reserved</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all navigation links
+        let navLinks = document.querySelectorAll(".nav-link");
+        let currentUrl = window.location.href;
+
+        navLinks.forEach(link => {
+            if (link.href === currentUrl) {
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove("active"));
+                // Add active class to the matching link
+                link.classList.add("active");
+            }
+        });
+    });
+</script>
+</body>
+</html>

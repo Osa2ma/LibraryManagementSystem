@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Library Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+            body {
+                margin: 0;
+                font-family: Arial, sans-serif;
+                animation: gradientBG 12s infinite alternate;
+                background: linear-gradient(135deg, #0d1117, #21262d, #1f2937, #424957);
+                background-size: 400% 400%;
+                color: white;
+            }
+
+            @keyframes gradientBG {
+                0% { background-position: 0% 50%; }
+                100% { background-position: 100% 50%; }
+            }
+
+            /* Navbar */
+            .navbar {
+                background-color: #1f2937;
+            }
+            .navbar-brand img {
+                margin-right: 10px;
+                height: 45px;
+            }
+            .nav-link {
+                color: white !important;
+                transition: color 0.3s ease;
+            }
+            /* .nav-link:hover {
+                color: #4e73df !important;
+            } */
+            .navbar .nav-link {
+        font-size: 1.1rem;
+        transition: all 0.3s ease-in-out; /* Smooth animation for hover */
+    }
+    .navbar .nav-link.active {
+    color:  #4e73df !important; /* Custom color for the selected tab */
+    font-weight: bold; /* Make the selected tab bold */
+    text-decoration: underline; /* Underline the active tab */
+    transition: all 0.3s ease-in-out;
+}
+
+    /* Hover effect */
+    .navbar .nav-link:hover {
+        color: #4e73df !important;; /* Change text color */
+        transform: scale(1.1); /* Slightly enlarge the tab */
+         /* Add underline */
+    }
+        .jumbotron {
+            padding: 2rem 1rem;
+            margin-bottom: 2rem;
+            background-color: #fffdfd;
+            border-radius: 0.3rem;
+        }
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+
+        /* Form styles */
+        form {
+            margin-bottom: 20px;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #343a40;
+            color: white;
+        }
+
+        /* Button styles */
+        .btn {
+            margin-right: 5px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+            border-color: #0062cc;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="static/nmu_mini.png" alt="NMU">
+                NMU LIBRARY
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="/">HOME</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/readers">READERS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/books">BOOKS</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/borrow">BORROW</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            Employee ID: {{ current_user.EmployeeID }}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Add New Item</h2>
+                <form id="addBookForm">
+                    <div class="mb-3">
+                        <label for="itemType" class="form-label">Select Item Type:</label>
+                        <select class="form-select" id="itemType" aria-label="Select Item Type">
+                            <option selected disabled>Select...</option>
+                            <option value="book">Book</option>
+                            <option value="genre">Genre</option>
+                            <option value="vendor">Vendor</option>
+                        </select>
+                    </div>
+                    <div id="itemFields"></div>
+                    <button type="submit" class="btn btn-primary">Add Item</button>
+                </form>
+            </div>
+            <div class="col-md-8">
+                <h2 id="itemsListHeading" style="display: none;">Items List</h2>
+                <table class="table" id="itemsListTable">
+                    <tbody id="itemsList">
+                        <!-- Item data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteConfirmationModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete this item?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Dynamic fields will be added here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteModalBtn">Delete</button>
+                    <button type="button" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr style="border: 1px solid rgba(255, 255, 255, 0.2); margin: 2rem 0;">
+    <footer>
+        <p>&copy; 2024 NMU Library Management System | All Rights Reserved</p>
+    </footer>
+    <!-- JavaScript for interactivity -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
+    <script>
+$(document).ready(function() {
+    // Call updateItemsList function when the document is ready
+    updateItemsList($('#itemType').val());
+
+    // Handle form submission
+    $('#addBookForm').submit(function(event) {
+        event.preventDefault();
+        // Get selected item type
+        var itemType = $('#itemType').val();
+        // Prepare data based on selected item type
+        var data;
+        switch (itemType) {
+            case 'vendor':
+                // Prepare vendor data
+                data = {
+                    type: itemType,
+                    name: $('#vendorName').val(),
+                    phoneNumber: $('#vendorPhoneNumber').val(),
+                    vendorID: $('#vendor_ID').val() // Changed ID to vendor_ID
+                };
+                break;
+            case 'genre':
+                // Prepare genre data
+                data = {
+                    type: itemType,
+                    genreName: $('#genreName').val()
+                };
+                break;
+            case 'book':
+                // Prepare book data
+                data = {
+                    type: itemType,
+                    id: $('#bookID').val(),
+                    title: $('#bookTitle').val(),
+                    publisher: $('#bookPublisher').val(),
+                    quantity: $('#bookQuantity').val(),
+                    bookCode: $('#bookCode').val(),
+                    vendorID: $('#bookVendorID').val(),
+                    genreID: $('#bookGenreID').val(),
+                    author: $('#bookAuthor').val()
+                };
+                break;
+            default:
+                // Invalid item type
+                return;
+        }
+        // Send AJAX request to add item
+        addItem(data);
+    });
+});
+function clearFormFields() {
+   
+    $('#itemFields').empty(); 
+}
+// Function to add item to database
+function addItem(data) {
+    $.ajax({
+        type: 'POST',
+        url: '/books/add', // Change this URL to match your Flask route
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(response) {
+            // Handle success response if needed
+            console.log('Item added successfully:', response);
+            // Reload items list after successful addition
+            updateItemsList($('#itemType').val());
+            clearFormFields()
+        },
+        error: function(xhr, status, error) {
+            // Handle error response if needed
+            console.error('Error adding item:', error);
+        }
+    });
+}
+
+// Function to dynamically generate input fields based on selected item type
+$('#itemType').change(function() {
+    var itemType = $(this).val();
+    var itemFields = $('#itemFields');
+    // Clear existing fields
+    itemFields.empty();
+    // Generate fields based on item type
+    switch (itemType) {
+        case 'vendor':
+            itemFields.append('<div class="mb-3"><label for="vendorID" class="form-label">Vendor ID:</label><input type="number" class="form-control" id="vendor_ID" name="vendorID"></div>');
+
+            itemFields.append('<div class="mb-3"><label for="vendorName" class="form-label">Vendor Name:</label><input type="text" class="form-control" id="vendorName" name="vendorName"></div>');
+            itemFields.append('<div class="mb-3"><label for="vendorPhoneNumber" class="form-label">Vendor Phone Number:</label><input type="text" class="form-control" id="vendorPhoneNumber" name="vendorPhoneNumber"></div>');
+            break;
+        case 'genre':
+            itemFields.append('<div class="mb-3"><label for="genreName" class="form-label">Genre Name:</label><input type="text" class="form-control" id="genreName" name="genreName"></div>');
+            break;
+        case 'book':
+            itemFields.append('<div class="mb-3"><label for="bookID" class="form-label">Book ID:</label><input type="number" class="form-control" id="bookID" name="bookID"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookTitle" class="form-label">Book Title:</label><input type="text" class="form-control" id="bookTitle" name="bookTitle"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookPublisher" class="form-label">Book Publisher:</label><input type="text" class="form-control" id="bookPublisher" name="bookPublisher"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookQuantity" class="form-label">Book Quantity:</label><input type="number" class="form-control" id="bookQuantity" name="bookQuantity"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookCode" class="form-label">Book Code:</label><input type="number" class="form-control" id="bookCode" name="bookCode"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookVendorID" class="form-label">Vendor ID:</label><input type="number" class="form-control" id="bookVendorID" name="bookVendorID"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookGenreID" class="form-label">Genre ID:</label><input type="number" class="form-control" id="bookGenreID" name="bookGenreID"></div>');
+            itemFields.append('<div class="mb-3"><label for="bookAuthor" class="form-label">Author:</label><input type="text" class="form-control" id="bookAuthor" name="bookAuthor"></div>');
+            break;
+        default:
+            break;
+    }
+});
+
+// Function to update items list based on selected item type
+function updateItemsList(itemType) {
+    var itemsList = $('#itemsList');
+    // Clear existing items
+    itemsList.empty();
+    // Add headers
+    var headers;
+    switch (itemType) {
+        case 'vendor':
+            headers = '<th scope="col">#</th><th scope="col">Vendor ID</th><th scope="col">Vendor Name</th><th scope="col">Phone Number</th><th scope="col">Action</th>';
+            break;
+        case 'genre':
+            headers = '<th scope="col">#</th><th scope="col">Genre ID</th><th scope="col">Genre Name</th><th scope="col">Action</th>';
+            break;
+        case 'book':
+            headers = '<th scope="col">#</th><th scope="col">Book ID</th><th scope="col">Title</th><th scope="col">Publisher</th><th scope="col">Quantity</th><th scope="col">Book Code</th><th scope="col">Vendor ID</th><th scope="col">GenreID</th><th scope="col">Author</th><th scope="col">Action</th>';
+            break;
+        default:
+            return;
+    }
+    itemsList.append('<tr>' + headers + '</tr>');
+
+    $.ajax({
+        type: 'GET',
+        url: '/books',
+        data: { itemType: itemType },
+        success: function(response) {
+            // Iterate over the response data and populate the table
+            var dataArray;
+            if (itemType === 'vendor') {
+                dataArray = response.vendors;
+            } else if (itemType === 'genre') {
+                dataArray = response.genres;
+            } else if (itemType === 'book') {
+                dataArray = response.books;
+            }
+            dataArray.forEach(function(item, index) {
+                var row = '<tr>';
+                row += '<td>' + (index + 1) + '</td>';
+                if (itemType === 'vendor') {
+                    row += '<td>' + item[0] + '</td>';
+                    row += '<td>' + item[1] + '</td>';
+                    row += '<td>' + item[2] + '</td>';
+                } else if (itemType === 'genre') {
+                    row += '<td>' + item[0] + '</td>';
+                    row += '<td>' + item[1] + '</td>';
+                } else if (itemType === 'book') {
+                    row += '<td>' + item[0] + '</td>'; // Assuming item[0] is the book ID
+                    row += '<td>' + item[1] + '</td>'; // Assuming item[1] is the book title
+                    row += '<td>' + item[2] + '</td>';
+                    row += '<td>' + item[3] + '</td>';
+                    row += '<td>' + item[4] + '</td>';
+                    row += '<td>' + item[5] + '</td>';
+                    row += '<td>' + item[6] + '</td>';
+                    row += '<td>' + item[7] + '</td>';
+                }
+                row += '<td><button class="btn btn-primary" onclick=\'openEditModal(' + JSON.stringify(item) + ');\'>Edit</button></td>';
+
+                row += '</tr>';
+                itemsList.append(row);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching data:', error);
+        }
+    });
+}
+
+// Call updateItemsList function when the selected item type changes
+$('#itemType').change(function() {
+    updateItemsList($(this).val());
+});
+
+// Function to open the edit modal with pre-filled data
+
+
+function updateItem(data) {
+    $.ajax({
+        type: 'POST',
+        url: '/books/update',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(response) {
+            // Handle success response if needed
+            console.log('Item updated successfully:', response);
+            // Reload items list after successful update
+            updateItemsList($('#itemType').val());
+            // Close the edit modal
+            $('#editModal').modal('hide');
+        },
+        error: function(xhr, status, error) {
+            // Handle error response if needed
+            console.error('Error updating item:', error);
+        }
+    });
+}
+$(document).on('click', '.delete-btn', function() {
+                var itemId = $(this).data('id');
+                $('#deleteConfirmationModal').data('id', itemId).modal('show');
+            });
+
+            // Handle confirm delete button click
+            $('#confirmDeleteBtn').click(function() {
+                var itemId = $('#deleteConfirmationModal').data('id');
+                var itemType = $('#itemType').val();
+                deleteItem(itemType, itemId);
+                $('#deleteConfirmationModal').modal('hide');
+            });
+
+function deleteItem(type, id) {
+    $.ajax({
+        type: 'POST',
+        url: '/books/delete',
+        data: JSON.stringify({ type: type, id: id }),
+        contentType: 'application/json',
+        success: function(response) {
+            // Handle success response
+            console.log('Item deleted successfully:', response);
+            // Reload items list after successful deletion
+            updateItemsList($('#itemType').val());
+            // Show a success message with item ID and type
+            $('#editModal').modal('hide');
+            
+           
+        },
+        error: function(xhr, status, error) {
+            // Handle error response
+            console.error('Error deleting item:', error);
+            // Show an error message
+            alert('Error deleting item: ' + error);
+        }
+    });
+}
+// Function to handle save changes button click in the edit modal
+// Function to handle save changes button click in the edit modal
+$('#editModal').on('click', '.btn-primary', function() {
+    var itemType = $('#itemType').val();
+    var data = {};
+    var item = JSON.parse($('#editModal').data('item')); // Parse the item data from data-item attribute
+
+    switch (itemType) {
+        case 'vendor':
+            data = {
+                type: itemType,
+                id: item[0], // Get the ID from the item data
+                name: $('#MvendorName').val(),
+                phoneNumber: $('#MvendorPhoneNumber').val()
+            };
+            break;
+        case 'genre':
+            data = {
+                type: itemType,
+                id: item[0], // Get the ID from the item data
+                genreName: $('#MgenreName').val()
+            };
+            break;
+        case 'book':
+            data = {
+                type: itemType,
+                id: item[0], // Get the ID from the item data
+                title: $('#MbookTitle').val(),
+                publisher: $('#MbookPublisher').val(),
+                quantity: $('#MbookQuantity').val(),
+                bookCode: $('#MbookCode').val(),
+                vendorID: $('#MbookVendorID').val(),
+                genreID: $('#MbookGenreID').val(),
+                author: $('#MbookAuthor').val()
+            };
+            console.log($('#MbookTitle').val())
+            break;
+        default:
+            break;
+    }
+       
+    $.ajax({
+        type: 'POST',
+        url: '/books/update',
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        success: function(response) {
+            // Handle success response if needed
+            console.log('Item updated successfully:', response);
+            // Reload items list after successful update
+            updateItemsList($('#itemType').val());
+            // Close the edit modal
+            $('#editModal').modal('hide');
+        },
+        error: function(xhr, status, error) {
+            // Handle error response if needed
+            console.error('Error updating item:', error);
+        }
+    }); // Call the updateItem function with the data
+});
+
+
+function updateModalTextFields() {
+    switch ($('#itemType').val()) {
+        case 'vendor':
+            $('#MvendorName').val(fieldValue1);
+            $('#MvendorPhoneNumber').val(fieldValue2);
+            break;
+        case 'genre':
+            $('#MgenreName').val(fieldValue1);
+            break;
+        case 'book':
+            $('#MbookTitle').val(fieldValue1);
+            $('#MbookPublisher').val(fieldValue2);
+            $('#MbookQuantity').val(fieldValue3);
+            $('#MbookCode').val(fieldValue4);
+            $('#MbookVendorID').val(fieldValue5);
+            $('#MbookGenreID').val(fieldValue6);
+            $('#MbookAuthor').val(fieldValue7);
+            break;
+        default:
+            break;
+    }
+}
+// Function to handle delete button click in the edit modal
+$('#editModal').on('click', '.btn-danger', function() {
+    var itemType = $('#itemType').val();
+    var item = JSON.parse($('#editModal').data('item')); // Parse the item data from data-item attribute
+    var id = item[0]; // Get the ID from the item data
+
+    deleteItem(itemType, id); // Call the deleteItem function with the itemType and ID
+});
+var fieldValue1, fieldValue2, fieldValue3, fieldValue4, fieldValue5, fieldValue6, fieldValue7;
+function openEditModal(item) {
+    var modalBody = $('.modal-body');
+    modalBody.empty();
+
+    var itemType = $('#itemType').val();
+    var modalFields = '';
+
+    // Store the item data as a data attribute in the modal for later use
+    $('#editModal').data('item', JSON.stringify(item));
+
+    // Set variables for the field values
+    
+
+    switch (itemType) {
+        case 'vendor':
+            fieldValue1 = item[1];
+            fieldValue2 = item[2];
+            modalFields += '<div class="mb-3"><label for="vendorName" class="form-label">Vendor Name:</label><input type="text" class="form-control" id="MvendorName" name="vendorName" value="' + fieldValue1 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="vendorPhoneNumber" class="form-label">Vendor Phone Number:</label><input type="text" class="form-control" id="MvendorPhoneNumber" name="vendorPhoneNumber" value="' + fieldValue2 + '"></div>';
+            break;
+        case 'genre':
+            fieldValue1 = item[1];
+            modalFields += '<div class="mb-3"><label for="genreName" class="form-label">Genre Name:</label><input type="text" class="form-control" id="MgenreName" name="genreName" value="' + fieldValue1 + '"></div>';
+            break;
+        case 'book':
+            fieldValue1 = item[1];
+            fieldValue2 = item[2];
+            fieldValue3 = item[3];
+            fieldValue4 = item[4];
+            fieldValue5 = item[5];
+            fieldValue6 = item[6];
+            fieldValue7 = item[7];
+            modalFields += '<div class="mb-3"><label for="bookTitle" class="form-label">Book Title:</label><input type="text" class="form-control" id="MbookTitle" name="bookTitle" value="' + fieldValue1 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookPublisher" class="form-label">Book Publisher:</label><input type="text" class="form-control" id="MbookPublisher" name="bookPublisher" value="' + fieldValue2 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookQuantity" class="form-label">Book Quantity:</label><input type="number" class="form-control" id="MbookQuantity" name="bookQuantity" value="' + fieldValue3 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookCode" class="form-label">Book Code:</label><input type="number" class="form-control" id="MbookCode" name="bookCode" value="' + fieldValue4 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookVendorID" class="form-label">Vendor ID:</label><input type="number" class="form-control" id="MbookVendorID" name="bookVendorID" value="' + fieldValue5 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookGenreID" class="form-label">Genre ID:</label><input type="number" class="form-control" id="MbookGenreID" name="bookGenreID" value="' + fieldValue6 + '"></div>';
+            modalFields += '<div class="mb-3"><label for="bookAuthor" class="form-label">Author:</label><input type="text" class="form-control" id="MbookAuthor" name="bookAuthor" value="' + fieldValue7 + '"></div>';
+            break;
+        default:
+            break;
+    }
+
+    // Append modal fields to modal body
+    modalBody.append(modalFields);
+    $('#editModal').modal('show');
+}
+
+    
+    // Show the edit modal
+   
+
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get all navigation links
+        let navLinks = document.querySelectorAll(".nav-link");
+        let currentUrl = window.location.href;
+
+        navLinks.forEach(link => {
+            if (link.href === currentUrl) {
+                // Remove active class from all links
+                navLinks.forEach(l => l.classList.remove("active"));
+                // Add active class to the matching link
+                link.classList.add("active");
+            }
+        });
+    });
+
+
+    </script>
+</body>
+</html>
