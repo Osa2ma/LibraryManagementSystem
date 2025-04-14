@@ -33,11 +33,11 @@ A web-based Library Management System built with **HTML** and **Python** for man
    ```bash
    python app.py
 
-##Usage
+## Usage
 1. Open the application in your web browser.
 2. Use the provided interface to manage books, members, and transactions.
 
-##Contributing
+## Contributing
 Contributions are welcome! Please follow these steps:
 
 1. Fork the repository.
@@ -53,5 +53,5 @@ Contributions are welcome! Please follow these steps:
 5. Create a pull request to the main repository.
 
 
-##License
+## License
 This project is licensed under the MIT License
