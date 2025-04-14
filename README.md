@@ -12,8 +12,8 @@ A web-based Library Management System built with **HTML** and **Python** for man
 
 ## Technologies Used
 
-- **Frontend**: HTML (61.2%)
-- **Backend**: Python (38.8%)
+- **Frontend**: HTML 
+- **Backend**: Python, SQL
 
 ## Installation
 
